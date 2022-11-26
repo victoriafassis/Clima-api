@@ -1,4 +1,4 @@
-# API Aeroportos
+# API Estações Meteorológicas
 
 ![Capa do Projeto](https://www.astera.com/wp-content/uploads/2020/01/rest.png)
 
