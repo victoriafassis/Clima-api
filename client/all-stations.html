@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Clima</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="public/main.css"> 
+
+</head>
+
+<body>
+    <div class="container">
+        <hr>
+        <h1>Lista de Estações Meteorológicas</h1>
+        <hr>
+
+        <div class="get-clima-detail-BTN">
+            <a href="search-clima" style="color: white; text-decoration: none; ">Pesquisar estação específica</a>
+        </div>
+
+        <div class="insert-new-clima-BTN">
+            <a href="insert-new-clima" style="color: white; text-decoration: none;">Inserir Estação</a>
+        </div>
+
+        <div>
+            <div class="row" id="stations">
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-station-modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar estação</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onClick="closeEditModal()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                        <form id="editForm" method="PUT" enctype="application/json">
+                            <input type="hidden" name="_method" value="PUT"/>
+
+                            <input class="form-control" hidden="true" name="id_estacao" id="id_estacao">
+
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Nome da estacao:</label>
+                                <input class="form-control" name="nome_estacao" id="nome_estacao">
+                            </div>
+                
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Código da regiao:</label>
+                                <input class="form-control" name="cod_regiao" id="cod_regiao">
+                            </div>
+                
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Unidade Federativa:</label>
+                                <input class="form-control" name="uf" id="uf">
+                            </div>
+                
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Código wmo:</label>
+                                <input class="form-control" name="codigo_wmo" id="codigo_wmo">
+                            </div>
+                
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Latitude:</label>
+                                <input class="form-control" name="latitude" id="latitude">
+                            </div>
+                
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Longitude:</label>
+                                <input class="form-control" name="longitude" id="longitude">
+                            </div>
+                
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Altitude:</label>
+                                <input class="form-control" name="altitude" id="altitude">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Data de fundacao</label>
+                                <input class="form-control" name="data_fundacao" id="data_fundacao">
+                            </div>
+                        </form>
+                        <button class="btn btn-primary" onClick="updateStationWithChangedData()">Salvar</button>
+                    </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+
+    <script>
+        function setEditModal(id_estacao) {
+
+                openEditModal();
+
+                const xhttp = new XMLHttpRequest();
+            
+                xhttp.open("GET", `http://localhost:3000/api/v1/estacoes/${id_estacao}`, false);
+                xhttp.send();
+            
+                const station = JSON.parse(xhttp.responseText)[0];
+            
+                document.getElementById('id_estacao').value = station.id_estacao;
+                document.getElementById('nome_estacao').value = station.nome_estacao;
+                document.getElementById('cod_regiao').value = station.cod_regiao;
+                document.getElementById('uf').value = station.uf;
+                document.getElementById('codigo_wmo').value = station.codigo_wmo;
+                document.getElementById('latitude').value = station.latitude;
+                document.getElementById('longitude').value = station.longitude;
+                document.getElementById('altitude').value = station.altitude;
+                document.getElementById('data_fundacao').value = station.data_fundacao;
+        }
+
+    function updateStationWithChangedData() {
+        updateStation(document.getElementById('id_estacao').value,
+                        document.getElementById('nome_estacao').value, 
+                        document.getElementById('cod_regiao').value,
+                        document.getElementById('uf').value,
+                        document.getElementById('codigo_wmo').value,
+                        document.getElementById('latitude').value,
+                        document.getElementById('longitude').value,
+                        document.getElementById('altitude').value,
+                        document.getElementById('data_fundacao').value);
+    }
+
+    function updateStation(id_estacao, nome_estacao, cod_regiao, uf, codigo_wmo, latitude, longitude, altitude, data_fundacao) {
+        const params = {
+            "nome_estacao": nome_estacao,
+            "cod_regiao": cod_regiao,
+            "uf": uf,
+            "codigo_wmo": codigo_wmo,
+            "latitude": latitude,
+            "longitude": longitude,
+            "altitude": altitude,
+            "data_fundacao": data_fundacao,
+        }
+        console.log("params", JSON.stringify(params));
+        const xhttp = new XMLHttpRequest();
+        xhttp.open("PUT", `http://localhost:3000/api/v1/estacoes/${id_estacao}`, false);
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        xhttp.send(JSON.stringify(params));
+    
+        closeEditModal();
+        alert("Estação atualizada com sucesso!");
+
+        location.reload();
+    }
+
+    function openEditModal() {
+        var modal = document.getElementById("edit-station-modal");
+        modal.style.display = "block";
+    }
+
+    function closeEditModal() {
+        var modal = document.getElementById("edit-station-modal");
+        modal.style.display = "none";
+    }
+
+    function deleteStation(id_estacao) {
+        const xhttp = new XMLHttpRequest();
+        xhttp.open("DELETE", `http://localhost:3000/api/v1/estacoes/${id_estacao}`, false);
+        xhttp.send();
+    
+        alert("Estação deletada com sucesso!");
+        location.reload();
+    }
+    
+    function loadStations() {
+        const xhttp = new XMLHttpRequest();
+    
+        xhttp.open("GET", "http://localhost:3000/api/v1/estacoes", false);
+        xhttp.send();
+    
+        const stations = JSON.parse(xhttp.responseText);
+    
+        for (let station of stations) {
+            const x = `
+                <div class="col-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">${station.id_estacao}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">${station.nome_estacao}</h6>
+    
+                            <div class= "cards-text" >cod_regiao: ${station.cod_regiao}</div>
+                            <div class= "cards-text">uf: ${station.uf}</div>
+                            <div class= "cards-text">codigo_wmo: ${station.codigo_wmo}</div>
+                            <div class= "cards-text">latitude: ${station.latitude}</div>
+                            <div class= "cards-text">longitude: ${station.longitude}</div>
+                            <div class= "cards-text">altitude: ${station.altitude}</div>
+                            <div class= "cards-text">data_fundacao: ${station.data_fundacao}</div>
+
+                            <hr>
+    
+                            <button type="button" class="btn btn-danger" onClick="deleteStation('${station.id_estacao}')">Deletar</button>
+                             <button types="button" class="btn btn-primary" onClick="setEditModal('${station.id_estacao}')">
+                                 Editar
+                             </button>
+                        </div>
+                    </div>
+                </div>
+            `
+    
+            document.getElementById('stations').innerHTML = document.getElementById('stations').innerHTML + x;
+        }
+    }
+    
+    loadStations();
+    </script>
+</body>
+
+</html>

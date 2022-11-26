@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=
+    , initial-scale=1.0">
+    <title>Pesquisar</title>
+    <link rel="stylesheet" href="main.css">
+
+</head>
+<script>
+        function searchStation() {
+            searchStationBy(document.getElementById('id_estacao').value);
+    }
+
+    function searchStationBy(id_estacao) {
+        const xhttp = new XMLHttpRequest();
+        xhttp.open("GET", `http://localhost:3000/api/v1/estacoes/${id_estacao}`, false);
+        xhttp.send();
+        
+        const stations = JSON.parse(xhttp.responseText);
+
+        for (let station of stations) {
+            const x = `
+                    <div class="col-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">${station.id_estacao}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">${station.nome_estacao}</h6>
+        
+                                <div class= "cards-text">cod_regiao: ${station.cod_regiao}</div>
+                                <div class= "cards-text">uf: ${station.uf}</div>
+                                <div class= "cards-text">codigo_wmo: ${station.codigo_wmo}</div>
+                                <div class= "cards-text">latitude: ${station.latitude}</div>
+                                <div class= "cards-text">longitude: ${station.longitude}</div>
+                                <div class= "cards-text">altitude: ${station.altitude}</div>
+                                <div class= "cards-text">data_fundacao: ${station.data_fundacao}</div>
+
+                                <hr>
+        
+                            </div>
+                        </div>
+                    </div>
+                `
+        
+                document.getElementById('found_station').innerHTML = x;
+        }
+    }
+</script>
+<body>
+    <h1 class="search-title">Pesquisar estação específica</h1>
+    <input type="text" name="id_estacao" id="id_estacao" class="input-search" placeholder="Insira o ID da estação..." maxlength="3">
+    <button class="btn btn-primary3" onClick="searchStation()" style="position: absolute; left: 950px; font-size: 15px;">
+        Pesquisar</button>
+    <div class="voltar2"><a href="all-stations" style="background-color: red; text-decoration: none; border-radius: 5px; 
+    padding: 10px; padding-left: 13px; padding-right: 13px; color: #ffff; position: absolute; left: 950px;" >Voltar</a></div>
+
+    <div id="found_station"></div>
+</body>
+</html>
+
